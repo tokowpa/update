@@ -177,7 +177,7 @@
                         <input type="number"
                                x-ref="cashInput"
                                min="0"
-                               x-model.number="cashReceived"
+                               x-model="cashReceived"
                                @keydown.enter.prevent="processDirectCheckout()"
                                placeholder="0"
                                class="w-full bg-transparent text-xs font-extrabold text-slate-900 placeholder:text-slate-300 focus:outline-none mt-0.5">
@@ -194,7 +194,7 @@
 
                     <!-- Tombol BAYAR -->
                     <div class="shrink-0">
-                        <button @click="processDirectCheckout()"
+                        <button type="button" @click="processDirectCheckout()"
                                 :disabled="cart.length === 0"
                                 :class="cart.length === 0 ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm active:scale-[0.98]'"
                                 class="px-4 py-2.5 rounded-lg font-extrabold text-xs tracking-wide flex items-center gap-1.5 transition">
@@ -1397,7 +1397,7 @@
                 async processDirectCheckout() {
                     if (this.cart.length === 0) return;
 
-                    const paid = Number(this.cashReceived) || 0;
+                    const paid = (this.cashReceived === '' || this.cashReceived === null || isNaN(this.cashReceived)) ? this.cartGrandTotal : Number(this.cashReceived);
                     const grandTotal = this.cartGrandTotal;
                     const isDebt = paid < grandTotal;
 
@@ -1411,7 +1411,7 @@
                     const trxData = {
                         id: 'trx_' + Date.now(),
                         receiptNo: receiptNo,
-                        customerName: this.customerName.trim() || 'Umum',
+                        customerName: (this.customerName || '').trim() || 'Umum',
                         items: JSON.parse(JSON.stringify(this.cart)),
                         subtotal: this.cartSubtotal,
                         discount: Math.max(0, Number(this.globalDiscount) || 0),
