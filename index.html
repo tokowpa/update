@@ -882,7 +882,6 @@
                 currentUserEmail: '',
                 loginModalOpen: false,
                 canDismissLoginModal: false,
-                pendingProtectedTab: null,
                 loginLoading: false,
                 loginErrorMessage: '',
                 loginForm: {
@@ -1042,11 +1041,6 @@
                 },
 
                 switchTab(tabName) {
-                    if ((tabName === 'products' || tabName === 'settings') && !this.isAuthenticated) {
-                        this.pendingProtectedTab = tabName;
-                        this.openLoginModal(true);
-                        return;
-                    }
                     this.activeTab = tabName;
                     if (tabName === 'pos') {
                         this.$nextTick(() => this.focusBarcode());
@@ -1097,10 +1091,7 @@
                         this.subscribeFirestoreData();
                         this.showToast('Login berhasil: ' + this.currentUserEmail, 'success');
 
-                        if (this.pendingProtectedTab) {
-                            this.activeTab = this.pendingProtectedTab;
-                            this.pendingProtectedTab = null;
-                        } else if (this.activeTab === 'pos') {
+                        if (this.activeTab === 'pos') {
                             this.$nextTick(() => this.focusBarcode());
                         }
                     } catch (err) {
