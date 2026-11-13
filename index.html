@@ -857,14 +857,14 @@
         // KONFIGURASI FIREBASE (ISI KREDENSIAL PROJECT FIREBASE ANDA DI SINI)
         // =====================================================================
         const firebaseConfig = {
-  apiKey: "AIzaSyDRCM2seqUSYpf_xWMuTW9gAim_shDlXBI",
-  authDomain: "wpakasir.firebaseapp.com",
-  projectId: "wpakasir",
-  storageBucket: "wpakasir.firebasestorage.app",
-  messagingSenderId: "302442533381",
-  appId: "1:302442533381:web:b1b4556552ca312f64c26c",
-  measurementId: "G-R6Y3L62RNT"
-};
+          apiKey: "AIzaSyDRCM2seqUSYpf_xWMuTW9gAim_shDlXBI",
+          authDomain: "wpakasir.firebaseapp.com",
+          projectId: "wpakasir",
+          storageBucket: "wpakasir.firebasestorage.app",
+          messagingSenderId: "302442533381",
+          appId: "1:302442533381:web:b1b4556552ca312f64c26c",
+          measurementId: "G-R6Y3L62RNT"
+        };
 
         function posApp() {
             return {
@@ -1025,11 +1025,19 @@
                     this.loadLocalData();
 
                     // Langsung inisialisasi Firebase menggunakan konfigurasi yang tertanam di kode
-                    const isConfigured = DEFAULT_FIREBASE_CONFIG.apiKey &&
-                                         !DEFAULT_FIREBASE_CONFIG.apiKey.startsWith('GANTI_');
+                    const cleanApiKey = (DEFAULT_FIREBASE_CONFIG.apiKey || '').trim();
+                    const cleanProjectId = (DEFAULT_FIREBASE_CONFIG.projectId || '').trim();
+                    const isConfigured = cleanApiKey.length > 10 &&
+                                         !cleanApiKey.includes('GANTI_') &&
+                                         cleanProjectId.length > 2 &&
+                                         !cleanProjectId.includes('GANTI_');
 
                     if (isConfigured) {
-                        await this.initFirebaseFirestore(DEFAULT_FIREBASE_CONFIG, true);
+                        await this.initFirebaseFirestore({
+                            ...DEFAULT_FIREBASE_CONFIG,
+                            apiKey: cleanApiKey,
+                            projectId: cleanProjectId
+                        }, true);
                     } else {
                         if (this.products.length === 0) {
                             this.seedSampleProducts(true);
