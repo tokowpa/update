@@ -854,10 +854,10 @@
 
     <script>
         // =====================================================================
-        // KONFIGURASI FIREBASE (ISI KREDENSIAL PROJECT FIREBASE ANDA DI SINI)
+        // KONFIGURASI FIREBASE (SILAKAN GANTI DENGAN KREDENSIAL PROJECT ANDA)
         // =====================================================================
-        const firebaseConfig = {
-  apiKey: "AIzaSyCiDlnl6AiHWsbJOpG0MHc8sTCn_MebTqI",
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyCiDlnl6AiHWsbJOpG0MHc8sTCn_MebTqI",
   authDomain: "wpastore-1d2c3.firebaseapp.com",
   databaseURL: "https://wpastore-1d2c3-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "wpastore-1d2c3",
@@ -1024,13 +1024,10 @@
 
                     this.loadLocalData();
 
-                    // Langsung inisialisasi Firebase menggunakan konfigurasi yang tertanam di kode
+                    // Inisialisasi Firebase menggunakan konfigurasi di atas
                     const cleanApiKey = (DEFAULT_FIREBASE_CONFIG.apiKey || '').trim();
                     const cleanProjectId = (DEFAULT_FIREBASE_CONFIG.projectId || '').trim();
-                    const isConfigured = cleanApiKey.length > 10 &&
-                                         !cleanApiKey.includes('GANTI_') &&
-                                         cleanProjectId.length > 2 &&
-                                         !cleanProjectId.includes('GANTI_');
+                    const isConfigured = cleanApiKey.length > 5 && cleanProjectId.length > 2;
 
                     if (isConfigured) {
                         await this.initFirebaseFirestore({
@@ -1071,7 +1068,7 @@
 
                 async submitLogin() {
                     if (!this.auth || !window.FirebaseModules) {
-                        this.loginErrorMessage = 'Konfigurasi Firebase di dalam kode belum diisi dengan kredensial project Anda.';
+                        this.loginErrorMessage = 'SDK Firebase belum siap. Coba refresh halaman.';
                         return;
                     }
                     this.loginLoading = true;
@@ -1089,7 +1086,6 @@
                         this.isAuthenticated = true;
                         this.currentUserEmail = userCredential.user.email || this.loginForm.email.trim();
 
-                        // Simpan email & password di perangkat agar tidak perlu login ulang
                         localStorage.setItem('kasirpos_saved_auth', JSON.stringify({
                             email: this.loginForm.email.trim(),
                             password: this.loginForm.password
@@ -1103,11 +1099,11 @@
                             this.$nextTick(() => this.focusBarcode());
                         }
                     } catch (err) {
-                        let msg = 'Email atau password salah.';
+                        let msg = 'Email atau password salah / akun belum terdaftar di Firebase Auth.';
                         if (err.code === 'auth/network-request-failed') {
-                            msg = 'Gagal terhubung ke internet untuk verifikasi login.';
-                        } else if (err.code === 'auth/too-many-requests') {
-                            msg = 'Terlalu banyak percobaan login. Coba beberapa saat lagi.';
+                            msg = 'Gagal terhubung ke internet.';
+                        } else if (err.code === 'auth/invalid-credential') {
+                            msg = 'Kredensial email/password tidak valid.';
                         }
                         this.loginErrorMessage = msg;
                     } finally {
