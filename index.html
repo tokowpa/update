@@ -378,9 +378,6 @@
                                class="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-600">
                     </div>
                     <div class="flex items-center gap-2">
-                        <button @click="seedSampleProducts()" class="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold transition">
-                            Muat Data Contoh
-                        </button>
                         <button @click="openProductFormModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
                             <i class="ph-bold ph-plus"></i>
                             <span>Tambah Produk</span>
@@ -1529,9 +1526,6 @@
                     });
 
                     this.saveLocalProducts();
-                    if (!silent) {
-                        this.showToast(addedCount > 0 ? `${addedCount} produk contoh berhasil dimuat.` : 'Semua produk contoh sudah ada.', 'success');
-                    }
                 },
 
                 editTransaction(trx) {
