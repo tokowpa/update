@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>POS Kasir Mobile</title>
+    <title>SIMPEL KASIR</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Dexie.js (IndexedDB wrapper) -->
@@ -782,8 +782,16 @@
                     ? `Hutang   : ${formatRupiah(trx.debt || Math.max(0, trx.total - trx.paid))}\n`
                     : `Kembali  : ${formatRupiah(trx.change)}\n`;
 
+                const ESC = "\x1B";
+                const GS = "\x1D";
+                const INIT = ESC + "@";               // Reset pengaturan printer
+                const BOLD_ON = ESC + "E\x01";        // Tebal ON
+                const BOLD_OFF = ESC + "E\x00";       // Tebal OFF
+                const BIG_TEXT = GS + "!\x11";        // Ukuran 2x (Tinggi & Lebar)
+                const NORMAL_TEXT = GS + "!\x00";     // Ukuran Normal
+
                 let text = "";
-                text += "           WPA SHOP          \n";
+                text += BOLD_ON + BIG_TEXT + "           WPA SHOP          \n" + NORMAL_TEXT;
                 text += `Waktu   : ${trx.dateFormatted}\n`;
                 text += `Kasir   : kasir\n`;
                 text += "--------------------------------\n";
