@@ -782,10 +782,8 @@
                     ? `Hutang   : ${formatRupiah(trx.debt || Math.max(0, trx.total - trx.paid))}\n`
                     : `Kembali  : ${formatRupiah(trx.change)}\n`;
 
-                
+                let text = "";
                 text += "           WPA SHOP          \n";
-                text += "";
-                text += "";
                 text += `Waktu   : ${trx.dateFormatted}\n`;
                 text += `Kasir   : kasir\n`;
                 text += "--------------------------------\n";
