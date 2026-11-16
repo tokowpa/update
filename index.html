@@ -782,7 +782,7 @@
                     ? `Hutang   : ${formatRupiah(trx.debt || Math.max(0, trx.total - trx.paid))}\n`
                     : `Kembali  : ${formatRupiah(trx.change)}\n`;
 
-                let text = "";
+                
                 text += "           WPA SHOP          \n";
                 text += "";
                 text += "";
@@ -799,7 +799,7 @@
                 text += statusLine;
                 text += "--------------------------------\n";
                 text += "  TERIMA KASIH ATAS KUNJUNGANNYA  \n";
-                text += "================================\n\n\n";
+                text += "================================\n";
 
                 const encodedText = encodeURIComponent(text);
                 const rawbtUrl = `intent://print?text=${encodedText}#Intent;scheme=rawbt;package=ru.a402d.rawbtprinter;end;`;
