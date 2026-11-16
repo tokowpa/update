@@ -112,30 +112,30 @@
                 </nav>
 
                 <!-- Total Belanja di Pojok Kanan Atas -->
-                <div class="bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 flex items-center gap-2 shrink-0">
+                <div class="bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 flex items-center gap-2 shrink-0 min-w-[95px]">
                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total</span>
-                    <span id="header-total-display" class="font-extrabold text-sm sm:text-base text-brand-600">Rp 0</span>
+                    <span id="header-total-display" class="font-extrabold text-xs sm:text-sm text-brand-600">Rp 0</span>
                 </div>
             </div>
 
             <!-- Baris Bawah: Uang Pembeli, Kembalian, Tombol Bayar -->
             <div class="bg-slate-50 p-2 rounded-xl border border-slate-200 flex items-center gap-2">
-                <!-- 1. Uang Pembeli -->
-                <div class="bg-white px-3 py-1.5 rounded-lg border border-slate-200 flex flex-col justify-center flex-1 min-w-[110px]">
+                <!-- 1. Uang Pembeli (Format Otomatis Ribuan) -->
+                <div class="bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 flex flex-col justify-center flex-1 min-w-[95px]">
                     <div class="flex justify-between items-center leading-none mb-0.5">
-                        <label for="buyer-cash-input" class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Uang Pembeli</label>
-                        <button type="button" onclick="window.setExactBuyerCash()" class="text-[9px] font-bold text-brand-600 hover:underline cursor-pointer">Uang Pas</button>
+                        <label for="buyer-cash-input" class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Bayar</label>
+                        <button type="button" onclick="window.setExactBuyerCash()" class="text-[9px] font-bold text-brand-600 hover:underline cursor-pointer">Pas</button>
                     </div>
                     <div class="relative mt-0.5">
                         <span class="absolute left-1.5 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-[10px]">Rp</span>
-                        <input type="number" id="buyer-cash-input" min="0" oninput="window.updateCartTotals()" 
+                        <input type="text" inputmode="numeric" id="buyer-cash-input" oninput="window.handleBuyerCashInput(this)" 
                             class="w-full pl-5 pr-1 py-0.5 bg-slate-50 border border-slate-200 rounded text-xs font-extrabold text-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-500" placeholder="0">
                     </div>
                 </div>
 
                 <!-- 2. Kembalian -->
-                <div class="bg-white px-3 py-1.5 rounded-lg border border-slate-200 flex flex-col justify-center flex-1 min-w-[110px]">
-                    <span id="change-debt-label" class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Kembalian</span>
+                <div class="bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 flex flex-col justify-center flex-1 min-w-[95px]">
+                    <span id="change-debt-label" class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Kembali</span>
                     <span id="change-debt-amount" class="font-extrabold text-xs sm:text-sm text-emerald-600 mt-0.5">Rp 0</span>
                 </div>
 
@@ -186,7 +186,7 @@
     <!-- ========================================== -->
     <main class="max-w-[1600px] mx-auto pb-6">
 
-        <!-- VIEW 1: KASIR (Tanpa Kolom Pencarian, Katalog Penuh) -->
+        <!-- VIEW 1: KASIR -->
         <section id="view-pos" class="view-section p-2.5 sm:p-6 lg:px-8">
             <div id="product-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2 sm:gap-3">
                 <!-- Di-render via JS -->
@@ -494,8 +494,8 @@
                 { id: 4, name: 'Telur Ayam 1Kg', price: 28000 }
             ];
 
-            const STORAGE_KEY_PRODUCTS = 'nusantara_pos_products_v7';
-            const STORAGE_KEY_TRANSACTIONS = 'nusantara_pos_transactions_v7';
+            const STORAGE_KEY_PRODUCTS = 'nusantara_pos_products_v8';
+            const STORAGE_KEY_TRANSACTIONS = 'nusantara_pos_transactions_v8';
 
             let products = [];
             let cart = [];
@@ -705,10 +705,21 @@
                 showToast('Keranjang dikosongkan');
             };
 
+            window.handleBuyerCashInput = function (input) {
+                let rawVal = input.value.replace(/[^0-9]/g, '');
+                if (rawVal === '') {
+                    input.value = '';
+                } else {
+                    input.value = Number(rawVal).toLocaleString('id-ID');
+                }
+                window.updateCartTotals();
+            };
+
             window.setExactBuyerCash = function () {
                 const cashInput = document.getElementById('buyer-cash-input');
                 if (cashInput) {
-                    cashInput.value = currentTotals.total || 0;
+                    const total = currentTotals.total || 0;
+                    cashInput.value = total > 0 ? total.toLocaleString('id-ID') : '';
                     window.updateCartTotals();
                 }
             };
@@ -771,7 +782,10 @@
                 document.getElementById('header-total-display').textContent = formatRupiah(grandTotal);
 
                 const cashInput = document.getElementById('buyer-cash-input');
-                const paid = cashInput && cashInput.value !== '' ? (parseFloat(cashInput.value) || 0) : 0;
+                let paid = 0;
+                if (cashInput && cashInput.value !== '') {
+                    paid = parseFloat(cashInput.value.replace(/[^0-9]/g, '')) || 0;
+                }
                 const diff = paid - grandTotal;
 
                 const labelEl = document.getElementById('change-debt-label');
@@ -806,7 +820,7 @@
                 if (cart.length === 0) return;
 
                 const cashInput = document.getElementById('buyer-cash-input');
-                const cashReceived = cashInput && cashInput.value !== '' ? (parseFloat(cashInput.value) || 0) : 0;
+                const cashReceived = cashInput && cashInput.value !== '' ? (parseFloat(cashInput.value.replace(/[^0-9]/g, '')) || 0) : 0;
                 const diff = cashReceived - currentTotals.total;
                 const isDebt = diff < 0;
 
