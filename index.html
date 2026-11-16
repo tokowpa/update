@@ -449,10 +449,7 @@
             });
 
             const DEFAULT_PRODUCTS = [
-                { id: 1, name: 'Beras Premium 5Kg', price: 65000 },
-                { id: 2, name: 'Minyak Goreng 2L', price: 38000 },
-                { id: 3, name: 'Gula Pasir 1Kg', price: 18000 },
-                { id: 4, name: 'Telur Ayam 1Kg', price: 28000 }
+                { id: 1, name: 'Beras Premium 5Kg', price: 65000 }
             ];
 
             let products = [];
@@ -791,7 +788,7 @@
                 const NORMAL_TEXT = GS + "!\x00";     // Ukuran Normal
 
                 let text = "";
-                text += BOLD_ON + BIG_TEXT + "      WPA SHOP     \n" + NORMAL_TEXT + BOLD_OFF;
+                text += BOLD_ON + BIG_TEXT + "  WPA SHOP     \n" + NORMAL_TEXT + BOLD_OFF;
                 text += `Waktu   : ${trx.dateFormatted}\n`;
                 text += `Kasir   : kasir\n`;
                 text += "--------------------------------\n";
@@ -804,7 +801,7 @@
                 text += `Bayar    : ${formatRupiah(trx.paid)}\n`;
                 text += statusLine;
                 text += "--------------------------------\n";
-                text += "  TERIMA KASIH  \n";
+                text += "     TERIMA KASIH  \n";
                 
 
                 const encodedText = encodeURIComponent(text);
