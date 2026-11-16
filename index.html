@@ -787,11 +787,11 @@
                 const INIT = ESC + "@";               // Reset pengaturan printer
                 const BOLD_ON = ESC + "E\x01";        // Tebal ON
                 const BOLD_OFF = ESC + "E\x00";       // Tebal OFF
-                const BIG_TEXT = GS + "!\x11";        // Ukuran 2x (Tinggi & Lebar)
+                const BIG_TEXT = GS + "!\x10";
                 const NORMAL_TEXT = GS + "!\x00";     // Ukuran Normal
 
                 let text = "";
-                text += BOLD_ON + BIG_TEXT + "           WPA SHOP          \n" + NORMAL_TEXT;
+                text += BOLD_ON + BIG_TEXT + "      WPA SHOP     \n" + NORMAL_TEXT + BOLD_OFF;
                 text += `Waktu   : ${trx.dateFormatted}\n`;
                 text += `Kasir   : kasir\n`;
                 text += "--------------------------------\n";
@@ -804,7 +804,7 @@
                 text += `Bayar    : ${formatRupiah(trx.paid)}\n`;
                 text += statusLine;
                 text += "--------------------------------\n";
-                text += "  TERIMA KASIH ATAS KUNJUNGANNYA  \n";
+                text += "  TERIMA KASIH  \n";
                 text += "================================\n";
 
                 const encodedText = encodeURIComponent(text);
