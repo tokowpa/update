@@ -6,10 +6,12 @@
     <title>POS Kasir Mobile</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Dexie.js (IndexedDB wrapper) -->
+    <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.js"></script>
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -88,7 +90,7 @@
     <!-- ========================================== -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
         <div class="max-w-[1600px] mx-auto px-3 py-2 flex flex-col gap-2">
-            <!-- Baris Atas: Logo App, Navigasi Tab, & Total Belanja -->
+            <!-- Baris Atas: Logo App, Total Belanja di Tengah, & Navigasi -->
             <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2 shrink-0">
                     <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-600 to-indigo-700 text-white flex items-center justify-center shadow-xs">
@@ -99,7 +101,13 @@
                     </div>
                 </div>
 
-                <nav class="hidden md:flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/70" aria-label="Navigasi Utama">
+                <!-- Total Belanja Posisinya di Tengah, Diperbesar & Lebih Jelas -->
+                <div class="bg-brand-50 px-4 py-1.5 rounded-xl border border-brand-200 flex items-center gap-2.5 shadow-xs">
+                    <span class="text-[10px] font-extrabold text-brand-600 uppercase tracking-wider">Total Belanja</span>
+                    <span id="header-total-display" class="font-black text-base sm:text-lg text-brand-700">Rp 0</span>
+                </div>
+
+                <nav class="hidden md:flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/70 shrink-0" aria-label="Navigasi Utama">
                     <button type="button" onclick="window.switchTab('pos')" id="nav-pos-desk" class="tab-btn active flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-brand-600 shadow-xs cursor-pointer">
                         <span>Kasir</span>
                     </button>
@@ -110,12 +118,6 @@
                         <span>Riwayat</span>
                     </button>
                 </nav>
-
-                <!-- Total Belanja di Pojok Kanan Atas -->
-                <div class="bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 flex items-center gap-2 shrink-0 min-w-[95px]">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total</span>
-                    <span id="header-total-display" class="font-extrabold text-xs sm:text-sm text-brand-600">Rp 0</span>
-                </div>
             </div>
 
             <!-- Baris Bawah: Uang Pembeli, Kembalian, Tombol Bayar -->
@@ -304,54 +306,6 @@
     </main>
 
     <!-- ========================================== -->
-    <!-- SLIDE-OVER DRAWER: DAFTAR ITEM DI KERANJANG -->
-    <!-- ========================================== -->
-    <div id="cart-drawer-backdrop" onclick="window.toggleCartDrawer(false)" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden pointer-events-none transition-opacity duration-300 opacity-0"></div>
-
-    <aside id="cart-drawer" class="fixed top-0 right-0 z-50 h-full w-full sm:w-[400px] bg-white shadow-2xl border-l border-slate-200 flex flex-col transform translate-x-full hidden pointer-events-none transition-transform duration-300 ease-out">
-        <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="9" cy="21" r="1" />
-                        <circle cx="20" cy="21" r="1" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="font-bold text-slate-800 text-sm sm:text-base leading-none">Daftar Item Belanja</h2>
-                    <span id="cart-item-count" class="text-xs text-slate-500">0 item dipilih</span>
-                </div>
-            </div>
-            <div class="flex items-center gap-1.5">
-                <button type="button" onclick="window.clearCart()" id="btn-clear-cart" disabled class="text-xs font-semibold text-rose-500 hover:text-rose-700 hover:bg-rose-50 px-2.5 py-1.5 rounded-lg transition-colors flex items-center gap-1 disabled:opacity-40 disabled:pointer-events-none cursor-pointer">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <polyline points="3 6 5 6 21 6" />
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                    </svg>
-                    <span>Kosongkan</span>
-                </button>
-                <button type="button" onclick="window.toggleCartDrawer(false)" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 flex items-center justify-center transition-colors cursor-pointer" title="Tutup">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <div id="cart-items-container" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2.5">
-            <!-- Di-render via JS -->
-        </div>
-
-        <div class="p-3 bg-slate-50 border-t border-slate-200">
-            <button type="button" onclick="window.toggleCartDrawer(false)" class="w-full py-2.5 rounded-xl bg-slate-800 text-white font-bold text-xs cursor-pointer">
-                Tutup & Kembali
-            </button>
-        </div>
-    </aside>
-
-    <!-- ========================================== -->
     <!-- MODAL: STRUK DIGITAL THERMAL               -->
     <!-- ========================================== -->
     <div id="receipt-modal" class="fixed inset-0 z-50 hidden pointer-events-none bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
@@ -481,11 +435,18 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- JAVASCRIPT APPLICATION LOGIC               -->
+    <!-- JAVASCRIPT APPLICATION LOGIC (DEXIE.JS)    -->
     <!-- ========================================== -->
     <script>
         (function () {
             'use strict';
+
+            // Inisialisasi Dexie Database
+            const db = new Dexie('NusantaraPOS_DB');
+            db.version(1).stores({
+                products: 'id, name, price',
+                transactions: '++id, invoice, timestamp, total'
+            });
 
             const DEFAULT_PRODUCTS = [
                 { id: 1, name: 'Beras Premium 5Kg', price: 65000 },
@@ -494,49 +455,34 @@
                 { id: 4, name: 'Telur Ayam 1Kg', price: 28000 }
             ];
 
-            const STORAGE_KEY_PRODUCTS = 'nusantara_pos_products_v9';
-            const STORAGE_KEY_TRANSACTIONS = 'nusantara_pos_transactions_v9';
-
             let products = [];
             let cart = [];
             let transactions = [];
             let currentTotals = { subtotal: 0, discount: 0, total: 0 };
             let currentReceiptTrx = null;
 
-            function loadFromStorage() {
+            async function initDatabase() {
                 try {
-                    const savedProducts = localStorage.getItem(STORAGE_KEY_PRODUCTS);
-                    const parsedProducts = savedProducts ? JSON.parse(savedProducts) : null;
-                    if (Array.isArray(parsedProducts) && parsedProducts.length > 0) {
-                        products = parsedProducts;
-                    } else {
-                        products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
-                        saveProductsToStorage();
+                    const count = await db.products.count();
+                    if (count === 0) {
+                        await db.products.bulkAdd(DEFAULT_PRODUCTS);
                     }
+                    await loadDataFromDB();
                 } catch (e) {
-                    products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
-                    saveProductsToStorage();
-                }
-
-                try {
-                    const savedTrx = localStorage.getItem(STORAGE_KEY_TRANSACTIONS);
-                    const parsedTrx = savedTrx ? JSON.parse(savedTrx) : [];
-                    transactions = Array.isArray(parsedTrx) ? parsedTrx : [];
-                } catch (e) {
-                    transactions = [];
+                    console.error('Dexie init error:', e);
                 }
             }
 
-            function saveProductsToStorage() {
+            async function loadDataFromDB() {
                 try {
-                    localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
-                } catch (e) {}
-            }
-
-            function saveTransactionsToStorage() {
-                try {
-                    localStorage.setItem(STORAGE_KEY_TRANSACTIONS, JSON.stringify(transactions));
-                } catch (e) {}
+                    products = await db.products.toArray();
+                    transactions = await db.transactions.orderBy('timestamp').reverse().toArray();
+                    window.renderProducts();
+                    window.renderCart();
+                    window.renderHistory();
+                } catch (e) {
+                    console.error('Load DB error:', e);
+                }
             }
 
             function formatRupiah(angka) {
@@ -592,28 +538,6 @@
                 else if (tabName === 'history') window.renderHistory();
             };
 
-            window.toggleCartDrawer = function (show) {
-                const drawer = document.getElementById('cart-drawer');
-                const backdrop = document.getElementById('cart-drawer-backdrop');
-                if (!drawer || !backdrop) return;
-
-                if (show) {
-                    backdrop.classList.remove('hidden', 'pointer-events-none');
-                    drawer.classList.remove('hidden', 'pointer-events-none');
-                    requestAnimationFrame(() => {
-                        backdrop.classList.remove('opacity-0');
-                        drawer.classList.remove('translate-x-full');
-                    });
-                } else {
-                    backdrop.classList.add('opacity-0', 'pointer-events-none');
-                    drawer.classList.add('translate-x-full', 'pointer-events-none');
-                    setTimeout(() => {
-                        backdrop.classList.add('hidden');
-                        drawer.classList.add('hidden');
-                    }, 300);
-                }
-            };
-
             window.renderProducts = function () {
                 const grid = document.getElementById('product-grid');
                 if (!grid) return;
@@ -641,18 +565,17 @@
                                 </span>
                             ` : ''}
 
+                            <!-- Klik kartu untuk menambahkan produk -->
                             <div class="py-0.5 cursor-pointer" onclick="window.addToCart(${prod.id})" title="Klik untuk tambah">
                                 <h3 class="font-bold text-slate-800 text-xs leading-tight line-clamp-2">${prod.name}</h3>
                             </div>
 
+                            <!-- Bagian bawah: Tombol Minus di Kiri, Harga di Tengah -->
                             <div class="pt-1.5 mt-1.5 border-t border-slate-100 flex items-center justify-between gap-1">
                                 <button type="button" onclick="window.updateCartQty(${prod.id}, -1)" 
                                     class="w-6 h-6 rounded-md bg-slate-100 text-slate-700 hover:bg-rose-100 hover:text-rose-600 flex items-center justify-center text-xs font-bold transition-colors cursor-pointer" title="Kurangi">−</button>
                                 
-                                <span class="font-extrabold text-brand-600 text-[11px] sm:text-xs text-center truncate">${formatRupiah(prod.price)}</span>
-                                
-                                <button type="button" onclick="window.addToCart(${prod.id})" 
-                                    class="w-6 h-6 rounded-md bg-brand-50 text-brand-600 hover:bg-brand-600 hover:text-white flex items-center justify-center text-xs font-bold transition-colors cursor-pointer" title="Tambah">+</button>
+                                <span onclick="window.addToCart(${prod.id})" class="font-extrabold text-brand-600 text-[11px] sm:text-xs text-center truncate cursor-pointer flex-1">${formatRupiah(prod.price)}</span>
                             </div>
                         </div>
                     `;
@@ -724,53 +647,6 @@
             };
 
             window.renderCart = function () {
-                const container = document.getElementById('cart-items-container');
-                const countLabel = document.getElementById('cart-item-count');
-                const clearBtn = document.getElementById('btn-clear-cart');
-
-                const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-
-                if (countLabel) countLabel.textContent = `${totalItems} item dipilih`;
-                if (clearBtn) clearBtn.disabled = cart.length === 0;
-
-                if (container) {
-                    if (cart.length === 0) {
-                        container.innerHTML = `
-                            <div class="h-full flex flex-col items-center justify-center text-center py-12 px-4">
-                                <div class="w-14 h-14 rounded-full bg-slate-100 text-slate-300 flex items-center justify-center mb-2.5">
-                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                                        <circle cx="9" cy="21" r="1" />
-                                        <circle cx="20" cy="21" r="1" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                                    </svg>
-                                </div>
-                                <p class="font-semibold text-slate-600 text-xs sm:text-sm">Keranjang kosong</p>
-                                <p class="text-[11px] text-slate-400 mt-0.5">Pilih produk di katalog untuk melihat rincian.</p>
-                            </div>
-                        `;
-                    } else {
-                        container.innerHTML = cart.map(item => {
-                            return `
-                                <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200/80 flex items-center justify-between gap-2.5">
-                                    <div class="min-w-0 flex-1">
-                                        <h4 class="font-bold text-slate-800 text-xs truncate">${item.name}</h4>
-                                        <p class="text-[11px] font-semibold text-brand-600">${item.qty} x ${formatRupiah(item.price)} = <span class="text-slate-900">${formatRupiah(item.qty * item.price)}</span></p>
-                                    </div>
-                                    <div class="flex items-center gap-1.5 shrink-0">
-                                        <button type="button" onclick="window.updateCartQty(${item.id}, -1)" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-xs font-bold active:bg-rose-100 active:text-rose-600 cursor-pointer">
-                                            ${item.qty === 1 ? '×' : '−'}
-                                        </button>
-                                        <span class="w-5 text-center text-xs font-extrabold text-slate-800">${item.qty}</span>
-                                        <button type="button" onclick="window.addToCart(${item.id})" class="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center text-xs font-bold active:bg-brand-600 active:text-white cursor-pointer">
-                                            +
-                                        </button>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('');
-                    }
-                }
-
                 window.updateCartTotals();
             };
 
@@ -815,7 +691,7 @@
                 }
             };
 
-            window.completeTransaction = function () {
+            window.completeTransaction = async function () {
                 if (cart.length === 0) return;
 
                 const cashInput = document.getElementById('buyer-cash-input');
@@ -840,13 +716,16 @@
                     debt: isDebt ? Math.abs(diff) : 0
                 };
 
-                transactions.unshift(trx);
-                saveTransactionsToStorage();
-                currentReceiptTrx = trx;
+                try {
+                    await db.transactions.add(trx);
+                    transactions = await db.transactions.orderBy('timestamp').reverse().toArray();
+                } catch (e) {
+                    console.error('Save transaction error:', e);
+                }
 
+                currentReceiptTrx = trx;
                 cart = [];
                 if (cashInput) cashInput.value = '';
-                window.toggleCartDrawer(false);
                 window.renderProducts();
                 window.renderCart();
 
@@ -979,34 +858,40 @@
                 document.getElementById('product-form-modal').classList.add('hidden', 'pointer-events-none');
             };
 
-            window.saveProduct = function (e) {
+            window.saveProduct = async function (e) {
                 e.preventDefault();
                 const idVal = document.getElementById('prod-id').value;
                 const name = document.getElementById('prod-name').value.trim();
                 const price = parseInt(document.getElementById('prod-price').value, 10) || 0;
 
-                if (idVal) {
-                    const idx = products.findIndex(p => p.id === parseInt(idVal, 10));
-                    if (idx !== -1) {
-                        products[idx] = { ...products[idx], name, price };
+                try {
+                    if (idVal) {
+                        const id = parseInt(idVal, 10);
+                        await db.products.update(id, { name, price });
                         showToast('Produk diperbarui');
+                    } else {
+                        const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                        await db.products.add({ id: newId, name, price });
+                        showToast('Produk ditambahkan');
                     }
-                } else {
-                    const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                    products.unshift({ id: newId, name, price });
-                    showToast('Produk ditambahkan');
+                    products = await db.products.toArray();
+                } catch (e) {
+                    console.error('Save product error:', e);
                 }
 
-                saveProductsToStorage();
                 window.closeProductFormModal();
                 window.renderManageProducts();
                 window.renderProducts();
             };
 
-            window.deleteProduct = function (id) {
-                products = products.filter(p => p.id !== id);
-                cart = cart.filter(c => c.id !== id);
-                saveProductsToStorage();
+            window.deleteProduct = async function (id) {
+                try {
+                    await db.products.delete(id);
+                    products = await db.products.toArray();
+                    cart = cart.filter(c => c.id !== id);
+                } catch (e) {
+                    console.error('Delete product error:', e);
+                }
                 window.renderManageProducts();
                 window.renderProducts();
                 window.renderCart();
@@ -1060,22 +945,23 @@
                 if (trx) window.openReceiptModal(trx);
             };
 
-            window.clearTransactionHistory = function () {
+            window.clearTransactionHistory = async function () {
                 if (transactions.length === 0) return;
-                transactions = [];
-                saveTransactionsToStorage();
+                try {
+                    await db.transactions.clear();
+                    transactions = [];
+                } catch (e) {
+                    console.error('Clear history error:', e);
+                }
                 window.renderHistory();
                 showToast('Riwayat transaksi dihapus');
             };
 
             function initApp() {
-                loadFromStorage();
-                window.renderProducts();
-                window.renderCart();
+                initDatabase();
 
                 document.addEventListener('keydown', e => {
                     if (e.key === 'Escape') {
-                        window.toggleCartDrawer(false);
                         window.closeReceiptModal();
                         window.closeProductFormModal();
                     }
