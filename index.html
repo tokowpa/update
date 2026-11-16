@@ -494,8 +494,8 @@
                 { id: 4, name: 'Telur Ayam 1Kg', price: 28000 }
             ];
 
-            const STORAGE_KEY_PRODUCTS = 'nusantara_pos_products_v8';
-            const STORAGE_KEY_TRANSACTIONS = 'nusantara_pos_transactions_v8';
+            const STORAGE_KEY_PRODUCTS = 'nusantara_pos_products_v9';
+            const STORAGE_KEY_TRANSACTIONS = 'nusantara_pos_transactions_v9';
 
             let products = [];
             let cart = [];
@@ -633,27 +633,26 @@
                     const qtyInCart = inCart ? inCart.qty : 0;
 
                     return `
-                        <div onclick="window.addToCart(${prod.id})"
-                            class="group relative bg-white rounded-xl border ${qtyInCart > 0 ? 'border-brand-500 ring-2 ring-brand-500/15' : 'border-slate-200/80'} p-2 sm:p-2.5 flex flex-col justify-between transition-all duration-150 cursor-pointer active:scale-95 hover:border-brand-400">
+                        <div class="group relative bg-white rounded-xl border ${qtyInCart > 0 ? 'border-brand-500 ring-2 ring-brand-500/15' : 'border-slate-200/80'} p-2 sm:p-2.5 flex flex-col justify-between transition-all duration-150">
                             
                             ${qtyInCart > 0 ? `
-                                <span class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-brand-600 text-white text-[10px] font-extrabold flex items-center justify-center shadow-xs">
+                                <span class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-brand-600 text-white text-[10px] font-extrabold flex items-center justify-center shadow-xs z-10">
                                     ${qtyInCart}
                                 </span>
                             ` : ''}
 
-                            <div class="py-0.5">
+                            <div class="py-0.5 cursor-pointer" onclick="window.addToCart(${prod.id})" title="Klik untuk tambah">
                                 <h3 class="font-bold text-slate-800 text-xs leading-tight line-clamp-2">${prod.name}</h3>
                             </div>
 
-                            <div class="pt-1.5 mt-1.5 border-t border-slate-100 flex items-center justify-between">
-                                <span class="font-extrabold text-brand-600 text-xs">${formatRupiah(prod.price)}</span>
-                                <span class="w-5 h-5 rounded-md bg-brand-50 text-brand-600 flex items-center justify-center text-[10px]">
-                                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                        <line x1="12" y1="5" x2="12" y2="19" />
-                                        <line x1="5" y1="12" x2="19" y2="12" />
-                                    </svg>
-                                </span>
+                            <div class="pt-1.5 mt-1.5 border-t border-slate-100 flex items-center justify-between gap-1">
+                                <button type="button" onclick="window.updateCartQty(${prod.id}, -1)" 
+                                    class="w-6 h-6 rounded-md bg-slate-100 text-slate-700 hover:bg-rose-100 hover:text-rose-600 flex items-center justify-center text-xs font-bold transition-colors cursor-pointer" title="Kurangi">−</button>
+                                
+                                <span class="font-extrabold text-brand-600 text-[11px] sm:text-xs text-center truncate">${formatRupiah(prod.price)}</span>
+                                
+                                <button type="button" onclick="window.addToCart(${prod.id})" 
+                                    class="w-6 h-6 rounded-md bg-brand-50 text-brand-600 hover:bg-brand-600 hover:text-white flex items-center justify-center text-xs font-bold transition-colors cursor-pointer" title="Tambah">+</button>
                             </div>
                         </div>
                     `;
@@ -762,7 +761,7 @@
                                             ${item.qty === 1 ? '×' : '−'}
                                         </button>
                                         <span class="w-5 text-center text-xs font-extrabold text-slate-800">${item.qty}</span>
-                                        <button type="button" onclick="window.updateCartQty(${item.id}, 1)" class="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center text-xs font-bold active:bg-brand-600 active:text-white cursor-pointer">
+                                        <button type="button" onclick="window.addToCart(${item.id})" class="w-7 h-7 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center text-xs font-bold active:bg-brand-600 active:text-white cursor-pointer">
                                             +
                                         </button>
                                     </div>
