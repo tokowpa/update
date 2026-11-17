@@ -791,7 +791,7 @@
                 const NORMAL_TEXT = GS + "!\x00";     // Ukuran Normal
 
                 let text = "";
-                text += BOLD_ON + BIG_TEXT + "     WPA SHOP     \n" + NORMAL_TEXT + BOLD_OFF;
+                text += BOLD_ON + BIG_TEXT + "    WPA SHOP \n" + NORMAL_TEXT + BOLD_OFF;
                 text += `Waktu   : ${trx.dateFormatted}\n`;
                 text += `Kasir   : kasir\n`;
                 text += "--------------------------------\n";
@@ -804,7 +804,7 @@
                 text += `Bayar    : ${formatRupiah(trx.paid)}\n`;
                 text += statusLine;
                 text += "--------------------------------\n";
-                text += "        TERIMA KASIH  \n";
+                text += "         TERIMA KASIH  \n";
                 
 
                 const encodedText = encodeURIComponent(text);
